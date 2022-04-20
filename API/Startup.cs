@@ -19,7 +19,7 @@ namespace API
     public class Startup
     {
         private readonly IConfiguration _configuration;
-        public Startup(IConfiguration configuration) 
+        public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -29,13 +29,14 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
+
             // Need to Pass connection string
-            services.AddDbContext<DataContext>(options=>
+            services.AddDbContext<DataContext>(options =>
             {
                 options.UseSqlite(_configuration.GetConnectionString("DefaultConnection"));
             });
             services.AddControllers();
+            services.AddCors();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
@@ -57,6 +58,8 @@ namespace API
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200"));
 
             app.UseEndpoints(endpoints =>
             {
